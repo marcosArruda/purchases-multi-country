@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  purchases-multi-country:
+    build: .
+    container_name: purchases-multi-country
+    
+    #healthcheck:
+    #  test: curl --fail http://127.0.0.1:8080/hello/Marcos || exit 1
+    #  interval: 10s
+    #  retries: 5
+    #  start_period: 5s
+    #  timeout: 10s
+    environment:
+      DB_NAME: 'purchases-multi-country-db'
+      DB_USER: 'purchases-user'
+      DB_PASSWORD: 'purchases-password'
+      DB_HOSTPORT: 'db:3306'
+    depends_on:
+      - db
+    expose:
+      - '8080'
+    ports:
+      - "8080:8080"
+
+  db:
+    image: mysql:8.0
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'purchases-multi-country-db'
+      MYSQL_USER: 'purchases-user'
+      MYSQL_PASSWORD: 'purchases-password'
+      MYSQL_ROOT_PASSWORD: 'mysql_root_password'
+    ports:
+      - '3309:3306'
+    expose:
+      - '3306'
+    volumes:
+      - purchases-multi-country-volume:/var/lib/mysql
+      - ./sql/configs:/etc/mysql/conf.d
+volumes:
+  purchases-multi-country-volume:
